@@ -1,15 +1,36 @@
 ---
 # Add sonar repository
-- include: repo.yml
+- name: Install the repo for SonarQube
+  get_url: url={{sonar_repo}} owner=root group=root mode=0700 dest=/etc/yum.repos.d/sonar.repo
+  when: ansible_os_family == "RedHat"
+  retries: 300
 
-# Install dependencies
-- include: dependencies.yml
+# Install package
+- name: Install SonarQube
+  yum: name=sonar-5.5 state=present
+  when: ansible_os_family == "RedHat"
+  notify: restart sonar
 
-# Install sonar runner
-- include: runner.yml
+- name: prepare logs dir
+  file: name=/var/log/sonar owner=sonar group=sonar mode=0755 state=directory
+
+- name: prepare data dir
+  file: name=/var/lib/sonar/data owner=sonar group=sonar mode=0755 state=directory
+
+- name: prepare temp dir
+  file: name=/var/lib/sonar/temp owner=sonar group=sonar mode=0755 state=directory
 
 # Install sonar plugins
-- include: plugins.yml
+- name: 'make sure sonar plugins are installed'
+  get_url: url={{item}}
+            owner=sonar group=sonar mode=0644
+            dest={{ sonar_directory }}/extensions/plugins
+            timeout=30
+  retries: 3
+  with_items: '{{ sonar_plugins }}'
+  notify: restart sonar
 
 # Run configuration
-- include: config.yml
+- name: 'configure sonar.properties'
+  template: src={{ sonar_config_template }} dest={{ sonar_directory }}/conf/sonar.properties mode=644 backup=off
+  notify: restart sonar

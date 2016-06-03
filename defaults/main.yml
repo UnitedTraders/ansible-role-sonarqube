@@ -1,8 +1,25 @@
 ---
-# defaults file for bbaassssiiee.sonar
-
-sonar_username: 'sonar'
-sonar_dependencies:
-  - 'java-1.7.0-openjdk'
-  - 'sonar-4.5'
 sonar_repo: 'http://downloads.sourceforge.net/project/sonar-pkg/rpm/sonar.repo'
+
+sonar_features:
+  mysql: False
+  postgresql: True
+
+sonar_db_name: 'sonar'
+sonar_db_user: 'sonar'  
+sonar_db_password: 'sonar'
+
+sonar_directory: '/opt/sonar'
+
+sonar_web_context: '/sonar'
+sonar_http_port: '9000'
+
+sonar_updatecenter_enabled: 'true'
+
+sonar_plugins:
+  - 'https://sonarsource.bintray.com/Distribution/sonar-java-plugin/sonar-java-plugin-3.14.jar'
+  - 'https://sonarsource.bintray.com/Distribution/sonar-javascript-plugin/sonar-javascript-plugin-2.13.jar'
+  - 'http://sonarsource.bintray.com/Distribution/sonar-xml-plugin/sonar-xml-plugin-1.4.1.jar'
+  - 'https://sonarsource.bintray.com/Distribution/sonar-csharp-plugin/sonar-csharp-plugin-5.2.jar'
+
+sonar_config_template: 'sonar.properties'
